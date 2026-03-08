@@ -5,14 +5,14 @@ POST {{baseUrl}}/shortenUrl
 Content-Type: application/json
 
 {
-  "originalUrl": "https://www.inflearn.com"
+  "originalUrl": "https://www.google.com"
 }
 
 ### 단축 URL 리다이렉트
-GET {{baseUrl}}/SbLazPqz
+GET {{baseUrl}}/C4FhQgEu
 
 ### 단축 URL 정보 조회
-GET {{baseUrl}}/shortenUrl/SbLazPqz
+GET {{baseUrl}}/shortenUrl/C4FhQgEu
 
 ### 전체 URL 정보 조회
 GET {{baseUrl}}/shortenUrls

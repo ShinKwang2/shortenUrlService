@@ -28,6 +28,19 @@ services:
     networks:
       - shorten-url-net
 
+  loki:
+    image: grafana/loki:3.7.1
+    container_name: shorten-url-loki
+    ports:
+      - "3100:3100"
+    command:
+      - -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/loki-config.yml:ro
+      - loki-data:/loki
+    networks:
+      - shorten-url-net
+
 networks:
   shorten-url-net:
     name: shorten-url-net
@@ -35,3 +48,4 @@ networks:
 
 volumes:
   grafana-data:
+  loki-data:
