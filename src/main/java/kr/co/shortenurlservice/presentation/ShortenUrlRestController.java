@@ -3,6 +3,7 @@ package kr.co.shortenurlservice.presentation;
 
 import jakarta.validation.Valid;
 import kr.co.shortenurlservice.application.SimpleShortenUrlService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+@Slf4j
 @RestController
 public class ShortenUrlRestController {
 
@@ -26,6 +28,8 @@ public class ShortenUrlRestController {
     public ResponseEntity<ShortenUrlCreateResponseDto> createShortenUrl(
             @Valid @RequestBody ShortenUrlCreateRequestDto shortenUrlCreateRequestDto
     ) {
+        log.trace("shortenUrlCreateRequestDto {}", shortenUrlCreateRequestDto);
+
         ShortenUrlCreateResponseDto shortenUrlCreateResponseDto
                 = simpleShortenUrlService.generateShortenUrl(shortenUrlCreateRequestDto);
         return ResponseEntity.ok().body(shortenUrlCreateResponseDto);
