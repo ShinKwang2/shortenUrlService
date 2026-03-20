@@ -1,0 +1,15 @@
+@baseUrl = http://localhost:8080
+
+### 단축 URL 생성
+POST {{baseUrl}}/shortenUrl
+Content-Type: application/json
+
+{
+  "originalUrl": "https://www.google.com"
+}
+
+### 단축 URL 리다이렉트
+GET {{baseUrl}}/gMM8NHcA
+
+### 단축 URL 정보 조회
+GET {{baseUrl}}/shortenUrl/gMM8NHcA

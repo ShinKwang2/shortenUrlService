@@ -17,7 +17,7 @@ import java.net.URISyntaxException;
 @RestController
 public class ShortenUrlRestController {
 
-    private SimpleShortenUrlService simpleShortenUrlService;
+    private final SimpleShortenUrlService simpleShortenUrlService;
 
     @Autowired
     public ShortenUrlRestController(SimpleShortenUrlService simpleShortenUrlService) {
@@ -47,7 +47,7 @@ public class ShortenUrlRestController {
         return new ResponseEntity<>(httpHeaders,HttpStatus.MOVED_PERMANENTLY);
     }
 
-    @RequestMapping(value = "/shortenUrl/{shorthenUrlKey}", method = RequestMethod.GET)
+    @RequestMapping(value = "/shortenUrl/{shortenUrlKey}", method = RequestMethod.GET)
     public ResponseEntity<ShortenUrlInformationDto> getShortenUrlInformation(
             @PathVariable String shortenUrlKey
     ) {
