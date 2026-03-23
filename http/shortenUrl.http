@@ -9,7 +9,7 @@ Content-Type: application/json
 }
 
 ### 단축 URL 리다이렉트
-GET {{baseUrl}}/gMM8NHcA
+GET {{baseUrl}}/FcguS5dh
 
 ### 단축 URL 정보 조회
-GET {{baseUrl}}/shortenUrl/gMM8NHcA
+GET {{baseUrl}}/shortenUrl/FcguS5dh
