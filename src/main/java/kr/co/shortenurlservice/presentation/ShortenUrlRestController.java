@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -55,5 +56,12 @@ public class ShortenUrlRestController {
                 = simpleShortenUrlService.getShortenUrlInformationByShortenUrlKey(shortenUrlKey);
 
         return ResponseEntity.ok().body(null);
+    }
+
+    @RequestMapping(value ="/shortenUrls", method = RequestMethod.GET)
+    public ResponseEntity<List<ShortenUrlInformationDto>> getAllShortenUrlInformation() {
+        List<ShortenUrlInformationDto> shortenUrlInformationDtoList = simpleShortenUrlService.getAllShortenUrlInformationDto();
+
+        return ResponseEntity.ok(shortenUrlInformationDtoList);
     }
 }

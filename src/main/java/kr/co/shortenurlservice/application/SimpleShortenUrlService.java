@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 public class SimpleShortenUrlService {
@@ -32,7 +34,6 @@ public class SimpleShortenUrlService {
 
         String originalUrl = shortenUrlCreateRequestDto.getOriginalUrl();
         String shortenUrlKey = getUniqueShortenUrlKey();
-        log.debug("getUniqueShortenUrlKey {}", shortenUrlKey);
 
         ShortenUrl shortenUrl = new ShortenUrl(originalUrl, shortenUrlKey);
         shortenUrlRepository.saveShortenUrl(shortenUrl);
@@ -70,9 +71,18 @@ public class SimpleShortenUrlService {
         return shortenUrlInformationDto;
     }
 
+    public List<ShortenUrlInformationDto> getAllShortenUrlInformationDto() {
+        List<ShortenUrl> shortenUrls = shortenUrlRepository.findAll();
+
+        return shortenUrls.stream()
+                .map(shortenUrl -> new ShortenUrlInformationDto(shortenUrl))
+                .toList();
+    }
+
     private String getUniqueShortenUrlKey() {
         final int MAX_RETRY_COUNT = 5;
         int count = 0;
+
         while (count++ < MAX_RETRY_COUNT) {
             String shortenUrlKey = ShortenUrl.generateShortenUrlKey();
             ShortenUrl shortenUrl = shortenUrlRepository.findShortenUrlByShortenUrlKey(shortenUrlKey);
