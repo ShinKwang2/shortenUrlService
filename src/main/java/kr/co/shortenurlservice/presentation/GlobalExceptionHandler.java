@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleLackOfShortenUrlKeyException(
             LackOfShortenUrlKeyException ex
     ) {
-        // 개발자에게 알려줄 수 있는 수단 필요
+        log.error("단축 URL 키 생성 한도 초과", ex); // ERROR + 스택트레이스
         return new ResponseEntity<>("단축 URL 자원이 부족합니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -27,6 +27,12 @@ public class GlobalExceptionHandler {
     ) {
         log.info(ex.getMessage());
         return new ResponseEntity<>("단축 URL을 찾지 못했습니다.", HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleUnexpectedException(Exception ex) {
+        log.error("예상치 못한 오류 발생", ex);
+        return new ResponseEntity<>("서버 내뷰 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

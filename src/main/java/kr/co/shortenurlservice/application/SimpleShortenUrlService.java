@@ -90,6 +90,10 @@ public class SimpleShortenUrlService {
             if (null == shortenUrl) {
                 return shortenUrlKey;
             }
+
+            if (count >= 3) {
+                log.warn("키 생성 재시도 {}회째, 키 공간 고갈 가능성 주의", count);
+            }
         }
 
         throw new LackOfShortenUrlKeyException();
