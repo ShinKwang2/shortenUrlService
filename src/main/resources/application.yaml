@@ -1,3 +1,6 @@
 spring:
   application:
     name: shortenurlservice
+  profiles:
+    active: dev
+
