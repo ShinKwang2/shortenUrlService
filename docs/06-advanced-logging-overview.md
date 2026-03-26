@@ -1,4 +1,4 @@
-# 🔭 ADVANCED LOGGING HANDBOOK
+# 고급 로깅 개요
 
 ### 분산 트레이싱 · 로그 파이프라인 고도화 · 통합 Observability 완벽 가이드
 
@@ -112,8 +112,16 @@ Twitter → Zipkin (2012) — 최초의 오픈소스 분산 트레이싱
   ↓
 Uber → Jaeger (2017) — CNCF 프로젝트, 현재 가장 대중적
   ↓
-OpenTracing + OpenCensus → OpenTelemetry (2019) — 업계 표준 통합
+OpenTracing + OpenCensus → OpenTelemetry 합병 발표 (2019)
+  ↓
+OTel Tracing → Stable GA (2021)   ← 인터넷 글 기준: 이 이후 글이 안정 API 기준
+  ↓
+OTel Metrics → Stable GA (2022)
+  ↓
+OTel Logs   → Stable GA (2023)   ← 비교적 최근 안정화
 ```
+
+> ⚠️ **주의**: 검색에서 나오는 OTel 관련 글은 작성 연도가 중요합니다. 2021년 이전 글은 불안정 API를 사용할 수 있으므로, 반드시 최신 문서 기준으로 따라가세요.
 
 ---
 
@@ -172,10 +180,10 @@ Trace ID: abc-123-def-456
   "serviceName": "waiting-service",
   "startTime": "2024-01-15T14:30:01.000Z",
   "duration": 245,
-  "tags": {
-    "http.method": "POST",
-    "http.url": "/api/waiting",
-    "http.status_code": 200,
+  "attributes": {
+    "http.request.method": "POST",
+    "url.path": "/api/waiting",
+    "http.response.status_code": 200,
     "user.id": "1001"
   },
   "logs": [
@@ -349,7 +357,7 @@ waiting-tracing/
 
 ```yaml
 # docker/docker-compose.yml
-version: '3.8'
+# version: '3.8'  # Docker Compose V2 이후 deprecated — 생략 가능
 
 services:
   jaeger:
@@ -1810,7 +1818,7 @@ datasources:
 ### 전체 LGTM 스택 docker-compose.yml
 
 ```yaml
-version: '3.8'
+# version: '3.8'  # Docker Compose V2 이후 deprecated — 생략 가능
 services:
   loki:
     image: grafana/loki:2.9.4

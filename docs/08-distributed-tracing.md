@@ -1,4 +1,4 @@
-# 🔭 분산 트레이싱 완벽 가이드
+# 분산 트레이싱 완벽 가이드
 
 ### OpenTelemetry · Jaeger · Micrometer Tracing · Spring Boot 3.x
 
@@ -255,24 +255,32 @@
       └── 벤더 중립적 API 제공
       └── Jaeger, Zipkin 등이 OpenTracing을 지원
 
-2015  Google → OpenCensus 프로젝트 공개
-      └── 트레이싱 + 메트릭을 통합 수집
-      └── Google Cloud에 최적화
-
 2017  Uber → Jaeger 오픈소스 공개
       └── Go 언어로 작성, 고성능
       └── CNCF에 기부, Graduated 프로젝트로 승격
       └── 현재 가장 널리 사용되는 트레이싱 백엔드
 
-2019  OpenTracing + OpenCensus → OpenTelemetry (OTel) 합병
+2018  Google → OpenCensus 오픈소스 공개
+      └── Google 내부 Census 시스템의 오픈소스화 (2015년 내부 개발, 2018년 공개)
+      └── 트레이싱 + 메트릭을 통합 수집
+      └── Google Cloud에 최적화
+
+2019  OpenTracing + OpenCensus → OpenTelemetry (OTel) 합병 발표
       └── "트레이싱 표준이 두 개면 표준이 아니다"
       └── 로그 + 메트릭 + 트레이스를 하나의 SDK로 통합
       └── CNCF 주도, 모든 클라우드 벤더가 지원
+      └── ⚠️ 2019년은 "합병 발표" 시점 — 안정화(GA)는 신호마다 다름
 
-2022  Spring Boot 3.0 출시
-      └── Spring Cloud Sleuth 지원 중단
-      └── Micrometer Tracing으로 대체
-      └── OpenTelemetry를 First-class로 지원
+2021  OTel Tracing → Stable (GA)
+      └── 이 시점 이후 작성된 Tracing 관련 글이 안정 API 기준
+
+2022  OTel Metrics → Stable (GA)
+      └── Spring Boot 3.0 출시, Spring Cloud Sleuth 지원 중단
+      └── Micrometer Tracing으로 대체, OTel First-class 지원
+
+2023  OTel Logs → Stable (GA)
+      └── 로그 신호는 비교적 최근에 안정화됨
+      └── 2023년 이전 글의 Logs API는 unstable 기준일 수 있음
 
 현재  OpenTelemetry = 업계 표준
       └── AWS, GCP, Azure 모두 OTel 지원
@@ -1117,7 +1125,7 @@ public void register() { ... }
 
 ```yaml
 # docker/docker-compose.yml
-version: '3.8'
+# version: '3.8'  # Docker Compose V2 이후 deprecated — 생략 가능
 
 services:
   jaeger:
@@ -2156,7 +2164,7 @@ public class CustomSampler implements io.opentelemetry.sdk.trace.samplers.Sample
 ### 32.2 운영 환경 docker-compose.yml
 
 ```yaml
-version: '3.8'
+# version: '3.8'  # Docker Compose V2 이후 deprecated — 생략 가능
 
 services:
   # ── Elasticsearch (Jaeger 스토리지) ──

@@ -1,4 +1,4 @@
-# 🚀 차세대 로그 인프라 완벽 가이드
+# 차세대 로그 인프라
 
 ### Grafana Loki · OpenTelemetry Collector · Kubernetes 로깅 · Kafka 클러스터
 
@@ -109,6 +109,10 @@ Grafana Loki (30일 보관):
 
 절감: 약 87% ($1,300/월 절약)
 ```
+
+> ⚠️ **조건 명시**: 위 비교는 **로그 전용 용도, 일 100GB 기준** 단일 시나리오임.
+> ES를 검색 서비스나 APM에도 함께 사용하는 팀은 Loki로 완전 대체 불가.
+> 로그만 Loki로 분리해도 비용 절감 효과는 있지만, 팀의 운영 경험과 쿼리 패턴을 먼저 검토할 것.
 
 ### 1.3 그런데 검색 속도는?
 
@@ -311,7 +315,7 @@ Chunk = 일정 시간 동안의 로그를 압축하여 묶은 블록
 ### 5.1 docker-compose.yml
 
 ```yaml
-version: '3.8'
+# version: '3.8'  # Docker Compose V2 이후 deprecated — 생략 가능
 
 services:
   # ═══ Grafana Loki ═══
@@ -1487,7 +1491,7 @@ min.insync.replicas = 2:
 
 ```yaml
 # docker/docker-compose-kafka-cluster.yml
-version: '3.8'
+# version: '3.8'  # Docker Compose V2 이후 deprecated — 생략 가능
 
 services:
   zookeeper:

@@ -1,4 +1,4 @@
-# 🔧 로그 파이프라인 고도화 완벽 가이드
+# 로그 파이프라인 고도화
 
 ### Filebeat · Kafka · Elasticsearch ILM · ES 클러스터 운영
 
@@ -195,7 +195,7 @@
   [App]                                              
     │ (로그 파일 출력)                                  
     ▼                                                
-  [Filebeat]        ← 각 서버에 설치 (15MB 메모리)      
+  [Filebeat]        ← 각 서버에 설치 (약 50~150MB 메모리, 설정에 따라 상이)
     │ (Kafka 전송)                                     
     ▼                                                 
   [Kafka]           ← 로그 버퍼 (유실 방지, 10배 트래픽도 흡수)
@@ -539,9 +539,12 @@ output.kafka:
   #   hash: ["fields.service"]          # 같은 서비스의 로그는 같은 파티션
   
   # ── 안정성 ──
-  required_acks: 1              # 0: fire-and-forget (유실 가능)
-                                # 1: 리더에게만 ACK ★ (권장)
-                                # -1: 모든 replica ACK (가장 안전, 느림)
+  # ⚠️ acks 선택 기준:
+  #   0  : fire-and-forget — 로그 유실 가능, 절대 사용 금지
+  #   1  : 리더 ACK — 리더 장애 시 복제 전 메시지 유실 가능 (처리량 우선 시)
+  #   -1 : 모든 ISR replica ACK ★ (유실 방지 권장)
+  #        → Kafka 브로커 설정 min.insync.replicas=2 와 함께 사용해야 효과 있음
+  required_acks: -1             # ★ 유실 방지 최우선 시 권장 (acks=all)
   
   # ── 성능 ──
   compression: gzip             # 압축 (네트워크 대역폭 절약)
@@ -614,7 +617,7 @@ log-pipeline/
 ### 10.2 docker-compose.yml
 
 ```yaml
-version: '3.8'
+# version: '3.8'  # Docker Compose V2 이후 deprecated — 생략 가능
 
 services:
   # ═══ Elasticsearch ═══
@@ -1942,7 +1945,7 @@ Replica 수: 0 (개발 환경)
 
 ```yaml
 # docker/docker-compose-cluster.yml
-version: '3.8'
+# version: '3.8'  # Docker Compose V2 이후 deprecated — 생략 가능
 
 services:
   es-node1:
@@ -2206,7 +2209,7 @@ ES는 디스크 사용률이 85%를 넘으면 새 샤드 할당을 거부하고(
 
 ```yaml
 # docker/docker-compose-production.yml
-version: '3.8'
+# version: '3.8'  # Docker Compose V2 이후 deprecated — 생략 가능
 
 services:
   # ═══ Zookeeper ═══

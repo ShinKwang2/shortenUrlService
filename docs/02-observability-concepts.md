@@ -1,4 +1,4 @@
-# ShortenUrl 프로젝트 - 로그 & 모니터링 기초 가이드
+# Observability 개념 가이드
 
 ## 목표
 구현에 앞서 OpenTelemetry, 로깅 전략, 모니터링 지표에 대한 개념을 정리한다.
@@ -206,7 +206,12 @@ Trace (traceId: abc123)
     └── Span: HTTP Response (1ms)
 ```
 
-Spring Boot + Micrometer Tracing은 Controller/Service 레벨의 Span을 **자동 생성**한다.
+Spring Boot + Micrometer Tracing이 **자동 생성**하는 Span의 범위:
+- ✅ **자동**: HTTP 인바운드 요청 전체 (Controller 진입~응답)
+- ✅ **자동**: WebClient/RestTemplate 외부 호출 Span
+- ❌ **수동 필요**: Service/Repository 계층 내부 메서드 → `@Observed` 어노테이션 또는 직접 `Observation.start()` 호출 필요
+
+즉, 아무것도 안 해도 요청 단위 최상위 Span은 생기지만, 내부 구간별 분해는 직접 계측해야 한다.
 
 </plan>
 
@@ -483,7 +488,7 @@ ShortenUrl에서는 originalUrl이 민감할 수 있는지 고려:
 ## 실행 계획 (업데이트)
 
 ### 마크다운 파일 저장
-현재 정리된 모든 내용을 프로젝트 내 `docs/observability-guide.md`로 저장
+현재 정리된 모든 내용을 프로젝트 내 `docs/02-observability-concepts.md`로 저장
 
 ### 구현 순서 (변경 없음)
 1단계 개념 이해 ✅ 완료
@@ -1142,6 +1147,6 @@ receivers:
 3. (선택) Alertmanager + Slack 연동
 
 ### 이 문서를 프로젝트에 저장
-`docs/observability-guide.md`로 저장하여 참고 자료로 활용
+`docs/02-observability-concepts.md`로 저장하여 참고 자료로 활용
 
 </recommend>

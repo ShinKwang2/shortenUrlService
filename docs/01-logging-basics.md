@@ -1,4 +1,4 @@
-# 🪵 LOGGING HANDBOOK
+# 로깅 기초 핸드북
 
 ### 주니어 개발자를 위한 로그 완벽 가이드
 
@@ -734,6 +734,9 @@ public class MdcLoggingFilter extends OncePerRequestFilter {
     }
 
     private String getClientIp(HttpServletRequest request) {
+        // ⚠️ 보안 주의: X-Forwarded-For 헤더는 클라이언트가 임의로 위조할 수 있음
+        // 로드밸런서/프록시(Nginx, AWS ALB 등) 뒤에 배치된 서버에서만 신뢰할 것
+        // 서버가 인터넷에 직접 노출된 경우 반드시 getRemoteAddr()만 사용
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.isEmpty()) {
             ip = request.getRemoteAddr();
@@ -1274,7 +1277,7 @@ waiting-log/
 
 ```yaml
 # docker/docker-compose.yml
-version: '3.8'
+# version: '3.8'  # Docker Compose V2 이후 deprecated — 생략 가능
 
 services:
   # ═══════════════════════════════════════
@@ -2583,7 +2586,7 @@ Prometheus 단일 인스턴스의 한계:
 
 ```yaml
 # docker/docker-compose.yml — 전체 ELK + Prometheus + Grafana
-version: '3.8'
+# version: '3.8'  # Docker Compose V2 이후 deprecated — 생략 가능
 
 services:
   # ═══ Elasticsearch ═══

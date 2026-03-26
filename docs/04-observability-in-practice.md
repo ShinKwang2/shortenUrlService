@@ -1,6 +1,6 @@
-# ShortenUrl 프로젝트: 개발자가 직접 해야 하는 Observability 5가지
+# Observability 실습 가이드
 
-> 이 문서는 `docs/observability-guide.md`(개념편)의 **구현 동반 문서**다.
+> 이 문서는 `docs/02-observability-concepts.md`(개념편)의 **구현 동반 문서**다.
 > Spring Boot가 자동으로 해주지 않는 5가지를 **왜 해야 하고**, **어떤 선택지가 있으며**, **이 프로젝트에서는 어떻게 적용하는지** 다룬다.
 
 ---
@@ -922,7 +922,7 @@ metrics_generator:
 ### 단계적 구성 — 한번에 다 하지 말 것
 
 위 설정을 한번에 다 추가하면 문제 발생 시 원인 파악이 어렵다.
-기존 `observability-guide.md`의 Phase와 맞춰서 단계적으로 추가한다:
+기존 `02-observability-concepts.md`의 Phase와 맞춰서 단계적으로 추가한다:
 
 | Phase | 추가하는 것 | docker-compose 서비스 |
 |-------|-----------|---------------------|

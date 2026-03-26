@@ -1,6 +1,6 @@
-# Observability 코드와 비즈니스 코드 분리: 실무 패턴 가이드
+# Observability 코드 분리 패턴
 
-> 이 문서는 `docs/observability-developer-setup.md`의 **후속 문서**다.
+> 이 문서는 `docs/04-observability-in-practice.md`의 **후속 문서**다.
 > 이전 가이드에서 `@Observed`, `MeterRegistry`, `log.info(...)` 등을 비즈니스 코드에 직접 넣는 방식을 제안했다.
 > 이 문서는 **"비즈니스 로직에 모니터링 코드가 섞이면 코드가 난잡해지는 문제"**를 실무에서 어떻게 해결하는지 다룬다.
 
@@ -33,7 +33,7 @@ public class SimpleShortenUrlService {
 
 비즈니스 로직이 **5줄**이다. 읽기 쉽고, 의도가 명확하다.
 
-### After: observability-developer-setup.md를 모두 적용하면
+### After: 04-observability-in-practice.md를 모두 적용하면
 
 ```java
 @Slf4j
@@ -891,6 +891,6 @@ HTTP 요청
   → 하이브리드: 구조적 → AOP, 비즈니스 → 인라인
 ```
 
-> **다음 단계**: `observability-developer-setup.md`의 Phase 5 체크리스트를 진행할 때,
+> **다음 단계**: `04-observability-in-practice.md`의 Phase 5 체크리스트를 진행할 때,
 > 이 문서의 하이브리드 패턴을 참고하여 `LoggingAspect`와 `RequestLoggingInterceptor`를
 > 먼저 만들고, 비즈니스 코드에는 최소한의 로그만 추가한다.
