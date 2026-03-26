@@ -59,7 +59,7 @@ public class ShortenUrlRestController {
         ShortenUrlInformationDto shortenUrlInformationDto
                 = simpleShortenUrlService.getShortenUrlInformationByShortenUrlKey(shortenUrlKey);
 
-        return ResponseEntity.ok().body(null);
+        return ResponseEntity.ok().body(shortenUrlInformationDto);
     }
 
     @RequestMapping(value ="/shortenUrls", method = RequestMethod.GET)
