@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 @Slf4j
 @Service
 public class SimpleShortenUrlService {
@@ -27,17 +29,23 @@ public class SimpleShortenUrlService {
     public ShortenUrlCreateResponseDto generateShortenUrl(
             ShortenUrlCreateRequestDto shortenUrlCreateRequestDto
     ) {
-        // 1. 단축 URL 키(key) 생성
-        // 2. 원래의 URL과 단축 키를 통해 ShortenUrl 도메인 객체 생성
-        // 3. 생성된 ShortenUrl을 레포지토리를 통해 저장
-        // 4. ShortenUrl을 ShortenUrlCreateResponseDto로 변환하여 반환
 
         String originalUrl = shortenUrlCreateRequestDto.getOriginalUrl();
+        long keyGenStart = System.nanoTime();
         String shortenUrlKey = getUniqueShortenUrlKey();
+        long keyGenDurationMs = System.nanoTime() - keyGenStart / 1_000_000;
 
         ShortenUrl shortenUrl = new ShortenUrl(originalUrl, shortenUrlKey);
+
+        long saveStart = System.nanoTime();
         shortenUrlRepository.saveShortenUrl(shortenUrl);
-        log.info("shortenUrl 생성: {}", shortenUrl);
+        long saveDurationMs = System.nanoTime() - saveStart / 1_000_000;
+
+        log.info("shortenUrl 생성: {}",
+                kv("shortenUrlKey", shortenUrlKey),
+                kv("originalUrl", originalUrl),
+                kv("keyGenDurationMs", keyGenDurationMs),
+                kv("saveDurationMs", saveDurationMs));
 
         ShortenUrlCreateResponseDto shortenUrlCreateResponseDto
                 = new ShortenUrlCreateResponseDto(shortenUrl);

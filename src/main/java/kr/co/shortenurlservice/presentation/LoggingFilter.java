@@ -4,6 +4,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import net.logstash.logback.argument.StructuredArguments;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static net.logstash.logback.argument.StructuredArguments.*;
 
 @Slf4j
 @Component
@@ -50,10 +53,31 @@ public class LoggingFilter implements Filter {
 
             // 3. 응답 로깅
             int statusCode = httpServletResponse.getStatus();
-            long durationMs = System.nanoTime() - startTime;
-            log.info("Response: {} {} → {} ({}ms)",
-                    wrappedRequest.getMethod(), wrappedRequest.getRequestURI(),
-                    statusCode, durationMs / 1_000_000);
+            long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+
+            // 상태코드 계열별 분류
+            String statusFamily = statusCode / 100 + "xx";
+
+            // durationMs가 500이 넘어갈 경우 Slow Request이므로 WARN으로 로깅한다.
+            if (durationMs > 500) {
+                log.warn("HTTP {} {} → {} ({}ms) [SLOW]",
+                        value("method", method),
+                        value("uri", uri),
+                        value("statusCode", statusCode),
+                        value("durationMs", durationMs),
+                        kv("statusFamily", statusFamily),
+                        kv("threshold", "warning")
+                );
+            } else {
+                log.info("HTTP {} {} → {} ({}ms)",
+                        value("method", method),
+                        value("uri", uri),
+                        value("statusCode", statusCode),
+                        value("durationMs", durationMs),
+                        kv("statusFamily", statusFamily)
+                );
+            }
+
 
         } finally {
             // 4. MDC 정리 (스레드 풀 재사용 시 오염 방지)
