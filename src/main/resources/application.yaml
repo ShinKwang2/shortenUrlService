@@ -3,4 +3,9 @@ spring:
     name: shortenurlservice
   profiles:
     active: dev
+  mvc:
+    static-path-pattern: /ui/**
+
+database:
+  address: no-database
 
