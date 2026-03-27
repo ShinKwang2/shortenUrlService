@@ -38,6 +38,13 @@ public class SimpleShortenUrlService {
         ShortenUrl shortenUrl = new ShortenUrl(originalUrl, shortenUrlKey);
 
         long saveStart = System.nanoTime();
+        /* 테스트용
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        */
         shortenUrlRepository.saveShortenUrl(shortenUrl);
         long saveDurationMs = (System.nanoTime() - saveStart) / 1_000_000;
 
