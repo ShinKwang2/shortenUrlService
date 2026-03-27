@@ -33,13 +33,13 @@ public class SimpleShortenUrlService {
         String originalUrl = shortenUrlCreateRequestDto.getOriginalUrl();
         long keyGenStart = System.nanoTime();
         String shortenUrlKey = getUniqueShortenUrlKey();
-        long keyGenDurationMs = System.nanoTime() - keyGenStart / 1_000_000;
+        long keyGenDurationMs = (System.nanoTime() - keyGenStart) / 1_000_000;
 
         ShortenUrl shortenUrl = new ShortenUrl(originalUrl, shortenUrlKey);
 
         long saveStart = System.nanoTime();
         shortenUrlRepository.saveShortenUrl(shortenUrl);
-        long saveDurationMs = System.nanoTime() - saveStart / 1_000_000;
+        long saveDurationMs = (System.nanoTime() - saveStart) / 1_000_000;
 
         log.info("shortenUrl 생성: {}",
                 kv("shortenUrlKey", shortenUrlKey),
