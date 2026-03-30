@@ -19,6 +19,8 @@ import static net.logstash.logback.argument.StructuredArguments.*;
 @Component
 public class LoggingFilter implements Filter {
 
+    private static final long SLOW_THRESHOLD_MS = 1000;
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (!(request instanceof HttpServletRequest httpServletRequest) ||
@@ -46,42 +48,32 @@ public class LoggingFilter implements Filter {
         String body = wrappedRequest.getReader().lines().collect(Collectors.joining());
         log.debug("Request: Method={}, URL={}, Body={}", method, uri, body);
 
+        long startTime = System.nanoTime();
+
         try {
-            long startTime = System.nanoTime();
-
             chain.doFilter(wrappedRequest, response);
-
-            // 3. 응답 로깅
-            int statusCode = httpServletResponse.getStatus();
-            long durationMs = (System.nanoTime() - startTime) / 1_000_000;
-
-            // 상태코드 계열별 분류
-            String statusFamily = statusCode / 100 + "xx";
-
-            // durationMs가 500이 넘어갈 경우 Slow Request이므로 WARN으로 로깅한다.
-            if (durationMs > 500) {
-                log.warn("HTTP {} {} → {} ({}ms) [SLOW]",
-                        value("method", method),
-                        value("uri", uri),
-                        value("statusCode", statusCode),
-                        value("durationMs", durationMs),
-                        kv("statusFamily", statusFamily),
-                        kv("threshold", "warning")
-                );
-            } else {
-                log.info("HTTP {} {} → {} ({}ms)",
-                        value("method", method),
-                        value("uri", uri),
-                        value("statusCode", statusCode),
-                        value("durationMs", durationMs),
-                        kv("statusFamily", statusFamily)
-                );
-            }
-
-
         } finally {
-            // 4. MDC 정리 (스레드 풀 재사용 시 오염 방지)
+            long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+            int statusCode = httpServletResponse.getStatus();
+            logTraffic(method, uri, statusCode, durationMs);
             MDC.clear();
+        }
+    }
+
+    private void logTraffic(String method, String uri, int statusCode, long durationMs) {
+        String msg = "HTTP {} {} → {} ({}ms)";
+        Object[] args = {
+                value("method", method),
+                value("uri", uri),
+                value("statusCode", statusCode),
+                value("durationMs", durationMs),
+                kv("statusFamily", statusCode / 100 + "xx")
+        };
+
+        if (durationMs > SLOW_THRESHOLD_MS) {
+            log.warn(msg, args);
+        } else {
+            log.info(msg, args);
         }
     }
 
