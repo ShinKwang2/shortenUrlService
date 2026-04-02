@@ -29,12 +29,9 @@ public class ShortenUrlRestController {
     public ResponseEntity<ShortenUrlCreateResponseDto> createShortenUrl(
             @Valid @RequestBody ShortenUrlCreateRequestDto shortenUrlCreateRequestDto
     ) {
-        log.info("URL 단축 요청, originalUrl={}", shortenUrlCreateRequestDto.getOriginalUrl());
-
         ShortenUrlCreateResponseDto shortenUrlCreateResponseDto
                 = simpleShortenUrlService.generateShortenUrl(shortenUrlCreateRequestDto);
 
-        log.info("URL 단축 완료, shortenUrlKey={}", shortenUrlCreateResponseDto.getShortenUrlKey());
         return ResponseEntity.ok().body(shortenUrlCreateResponseDto);
     }
 
@@ -42,8 +39,6 @@ public class ShortenUrlRestController {
     public ResponseEntity<?> redirectShortenUrl(
             @PathVariable String shortenUrlKey
     ) throws URISyntaxException {
-        log.info("리다이렉트 요청, shortenUrlKey={}", shortenUrlKey);
-
         String originalUrl = simpleShortenUrlService.getOriginalUrlByShortenUrlKey(shortenUrlKey);
 
         URI redirectUri = new URI(originalUrl);

@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleNotFoundShortenUrlException(
             NotFoundShortenUrlException ex
     ) {
-        log.info(ex.getMessage());
+        log.info("URL 조회 실패: {}", ex.getMessage());
         return new ResponseEntity<>("단축 URL을 찾지 못했습니다.", HttpStatus.NOT_FOUND);
     }
 
@@ -41,13 +41,11 @@ public class GlobalExceptionHandler {
         // 유효성 검증 오류 세부 정보 추출
         StringBuilder errorMessage = new StringBuilder("유효성 검증 실패: ");
         ex.getBindingResult().getFieldErrors().forEach(error -> {
-            errorMessage.append(String.format("필드 '%s': %s. ", error.getField(), error.getDefaultMessage()));
+            log.info("[VALIDATION] field={}, constraint={}, rejectedValue={}",
+                    error.getField(), error.getRejectedValue(), error.getDefaultMessage());
         });
 
-        // 상세 로그
-        log.debug("잘못된 요청: {}", errorMessage);
-
         // 클라이언트에 응답
-        return new ResponseEntity<>(errorMessage.toString(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("입력값이 올바르지 않습니다.", HttpStatus.BAD_REQUEST);
     }
 }
