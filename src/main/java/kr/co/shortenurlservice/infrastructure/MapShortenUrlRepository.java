@@ -27,6 +27,6 @@ public class MapShortenUrlRepository implements ShortenUrlRepository {
 
     @Override
     public List<ShortenUrl> findAll() {
-        return new ArrayList<>(shortenUrls.values());
+        return List.copyOf(shortenUrls.values());
     }
 }
