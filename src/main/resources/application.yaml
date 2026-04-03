@@ -9,3 +9,5 @@ spring:
 database:
   address: no-database
 
+server:
+  port: 8080
