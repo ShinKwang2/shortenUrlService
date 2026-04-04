@@ -2,13 +2,12 @@ package kr.co.shortenurlservice.infrastructure;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.logstash.logback.argument.StructuredArguments;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import static net.logstash.logback.argument.StructuredArguments.*;
+import static net.logstash.logback.argument.StructuredArguments.value;
 
 @Slf4j
 @RequiredArgsConstructor
