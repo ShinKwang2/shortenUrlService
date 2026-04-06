@@ -14,6 +14,7 @@ import kr.co.shortenurlservice.presentation.ShortenUrlInformationDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static net.logstash.logback.argument.StructuredArguments.kv;
@@ -63,7 +64,7 @@ public class SimpleShortenUrlService {
         // Timer로 키 생성 시간 측정
         String shortenUrlKey = keyGenTimer.record(this::getUniqueShortenUrlKey);
 
-        ShortenUrl shortenUrl = new ShortenUrl(originalUrl, shortenUrlKey);
+        ShortenUrl shortenUrl = new ShortenUrl(originalUrl, shortenUrlKey, LocalDateTime.now());
 
         long saveStart = System.nanoTime();
         shortenUrlRepository.saveShortenUrl(shortenUrl);

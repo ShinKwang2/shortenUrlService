@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
@@ -36,7 +38,7 @@ class LoggingFilterTest {
     void setUp() throws Exception {
         json = objectMapper.writeValueAsString(new ShortenUrlCreateRequestDto(url));
 
-        ShortenUrl shortenUrl = new ShortenUrl(url, ShortenUrl.generateShortenUrlKey());
+        ShortenUrl shortenUrl = new ShortenUrl(url, ShortenUrl.generateShortenUrlKey(), LocalDateTime.now());
         ShortenUrlCreateResponseDto response = new ShortenUrlCreateResponseDto(shortenUrl);
         given(simpleShortenUrlService.generateShortenUrl(any()))
                 .willReturn(response);
