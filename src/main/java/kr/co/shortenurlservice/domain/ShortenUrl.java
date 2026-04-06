@@ -2,6 +2,7 @@ package kr.co.shortenurlservice.domain;
 
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.Random;
 
 @ToString
@@ -13,10 +14,15 @@ public class ShortenUrl {
 
     private Long redirectCount;
 
-    public ShortenUrl(String originalUrl, String shortenUrlKey) {
+    private LocalDateTime createdAt;
+    private boolean expired;
+
+    public ShortenUrl(String originalUrl, String shortenUrlKey, LocalDateTime createdAt) {
         this.originalUrl = originalUrl;
         this.shortenUrlKey = shortenUrlKey;
         this.redirectCount = 0L;
+        this.createdAt = createdAt;
+        this.expired = false;
     }
 
     public String getOriginalUrl() {
@@ -33,6 +39,18 @@ public class ShortenUrl {
 
     public void increaseRedirectCount() {
         this.redirectCount = this.redirectCount + 1;
+    }
+
+    public void expire() {
+        this.expired = true;
+    }
+
+    public boolean isExpired() {
+        return expired;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public static String generateShortenUrlKey() {

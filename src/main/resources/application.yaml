@@ -23,3 +23,7 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
+url:
+  ttl-days: 30 # URL 기한 만료 (일)
+  expiration-cron: "0 0 * * * *" # 매 시간 정각 실행
