@@ -42,8 +42,8 @@ public class UrlExpirationScheduler {
         int errors = 0;
 
         log.info("[BATCH] {} 시작",
-                kv("event", "batch_started"),
                 kv("jobName", JOB_NAME),
+                kv("event", "batch_started"),
                 kv("startedAt", startedAt),
                 kv("ttlDays", ttlDays)
         );
@@ -70,7 +70,7 @@ public class UrlExpirationScheduler {
                     errors++;
                     log.error("[BATCH] URL 만료 처리 실패: {}",
                             kv("shortenUrlKey", url.getShortenUrlKey()),
-                            kv("event", "url_expire_faild"),
+                            kv("event", "url_expire_failed"),
                             kv("createdAt", url.getCreatedAt()),
                             e
                     );
@@ -85,7 +85,6 @@ public class UrlExpirationScheduler {
                         kv("errors", errors),
                         kv("durationMs", durationMs),
                         kv("event", "batch_completed"),
-
                         kv("ttlDays", ttlDays)
                 );
 
@@ -116,7 +115,5 @@ public class UrlExpirationScheduler {
 
             throw e;
         }
-
-
     }
 }
