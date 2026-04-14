@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.argument.StructuredArguments;
 import org.slf4j.MDC;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import static net.logstash.logback.argument.StructuredArguments.*;
 
 @Slf4j
+@Order(1)
 @Component
 public class LoggingFilter implements Filter {
 
