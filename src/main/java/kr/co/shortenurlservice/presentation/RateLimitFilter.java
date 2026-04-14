@@ -55,7 +55,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             return; // chain.doFilter 요청하지 않음 -> 요청 차단
         }
 
-        filterChain.doFilter(request, response)
+        filterChain.doFilter(request, response);
     }
 
     @Scheduled(fixedRate = 60_000)
