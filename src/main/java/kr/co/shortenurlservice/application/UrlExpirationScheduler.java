@@ -35,7 +35,7 @@ public class UrlExpirationScheduler {
     @Scheduled(cron = "${url.expiration-cron}")
     public void cleanupExpirationUrls() {
         long startTime = System.nanoTime();
-        LocalDateTime startedAt = LocalDateTime.now(clock);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         int processed = 0;
         int expired = 0;
@@ -44,12 +44,12 @@ public class UrlExpirationScheduler {
         log.info("[BATCH] {} 시작",
                 kv("jobName", JOB_NAME),
                 kv("event", "batch_started"),
-                kv("startedAt", startedAt),
+                kv("startedAt", now),
                 kv("ttlDays", ttlDays)
         );
         try {
             List<ShortenUrl> allUrls = shortenUrlRepository.findAll();
-            LocalDateTime threshold = LocalDateTime.now().minusDays(ttlDays);
+            LocalDateTime threshold = now.minusDays(ttlDays);
 
             for (ShortenUrl url : allUrls) {
                 processed++;
