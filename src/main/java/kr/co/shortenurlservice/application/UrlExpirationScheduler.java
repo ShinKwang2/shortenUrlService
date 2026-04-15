@@ -75,31 +75,30 @@ public class UrlExpirationScheduler {
                             e
                     );
                 }
+            }
+            // 3. 배치 완료 로그 - 요약 정보 포함
+            long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+            log.info("[BATCH] {} 완료, {}, {}, {}, {}ms",
+                    kv("jobName", JOB_NAME),
+                    kv("processed", processed),
+                    kv("expired", expired),
+                    kv("errors", errors),
+                    kv("durationMs", durationMs),
+                    kv("event", "batch_completed"),
+                    kv("ttlDays", ttlDays)
+            );
 
-                // 3. 배치 완료 로그 - 요약 정보 포함
-                long durationMs = (System.nanoTime() - startTime) / 1_000_000;
-                log.info("[BATCH] {} 완료, {}, {}, {}, {}ms",
+            // 4. 느린 배치 경고
+            if (durationMs > SLOW_EXECUTION_THRESHOLD_MS) {
+                log.warn("[BATCH] {} 느린 완료, {}ms, {}ms",
                         kv("jobName", JOB_NAME),
+                        kv("durationMs", durationMs),
+                        kv("thresholdMs", SLOW_EXECUTION_THRESHOLD_MS),
+                        kv("event", "batch_slow"),
                         kv("processed", processed),
                         kv("expired", expired),
-                        kv("errors", errors),
-                        kv("durationMs", durationMs),
-                        kv("event", "batch_completed"),
-                        kv("ttlDays", ttlDays)
+                        kv("errors", errors)
                 );
-
-                // 4. 느린 배치 경고
-                if (durationMs > SLOW_EXECUTION_THRESHOLD_MS) {
-                    log.warn("[BATCH] {} 느린 완료, {}ms, {}ms",
-                            kv("jobName", JOB_NAME),
-                            kv("durationMs", durationMs),
-                            kv("thresholdMs", SLOW_EXECUTION_THRESHOLD_MS),
-                            kv("event", "batch_slow"),
-                            kv("processed", processed),
-                            kv("expired", expired),
-                            kv("errors", errors)
-                    );
-                }
             }
         } catch (Exception e) {
             long durationMs = (System.nanoTime() - startTime) / 1_000_000;
