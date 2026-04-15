@@ -23,11 +23,15 @@ import static net.logstash.logback.argument.StructuredArguments.*;
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
 
+    private static final String RATE_LIMIT_EXCEEDED_EVENT = "rate_limit_exceeded";
+    private static final String RATE_LIMIT_COUNTER_RESET_EVENT = "rate_limit_counter_reset";
+
     private final int requestsPerMinute;
     private final ConcurrentHashMap<String, AtomicInteger> requestCounts;
 
-    public RateLimitFilter(@Value("${rate-limit.requests-per-minute}") int requestPerMinute) {
-        this.requestsPerMinute = requestPerMinute;
+
+    public RateLimitFilter(@Value("${rate-limit.requests-per-minute}") int requestsPerMinute) {
+        this.requestsPerMinute = requestsPerMinute;
         this.requestCounts = new ConcurrentHashMap<>();
     }
 
@@ -36,18 +40,23 @@ public class RateLimitFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String clientIp = request.getRemoteAddr();
+        String clientIp = extractClientIp(request);
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
 
         AtomicInteger count = requestCounts.computeIfAbsent(clientIp, k -> new AtomicInteger(0));
         int currentCount = count.incrementAndGet();
 
         if (currentCount > requestsPerMinute) {
-            log.warn("[RATE_LIMIT] 요청 한도 초과, ip={}, endpoint={} {}, limit={}/min, current={}",
-                    clientIp,
-                    request.getMethod(),
-                    request.getRequestURI(),
-                    requestsPerMinute,
-                    currentCount);
+            log.warn("[RATE_LIMIT] 요청 한도 초과: {}, {}, {}, {}, {}, {}",
+                    kv("event", RATE_LIMIT_EXCEEDED_EVENT),
+                    kv("clientIp", clientIp),
+                    kv("method", method),
+                    kv("uri", uri),
+                    kv("limitPerMinute", requestsPerMinute),
+                    kv("currentCount", currentCount),
+                    kv("statusCode", HttpStatus.TOO_MANY_REQUESTS.value())
+            );
 
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
             response.setContentType("text/plain; charset=UTF-8");
@@ -59,10 +68,29 @@ public class RateLimitFilter extends OncePerRequestFilter {
     }
 
     @Scheduled(fixedRate = 60_000)
-    public void resetLateLimitCounts() {
-        if (!requestCounts.isEmpty()) {
-            log.debug("[RATE_LIMIT] 카운터 초기화, trackedIp Count={}", requestCounts.size());
-            requestCounts.clear();
+    public void resetRateLimitCounts() {
+        int trackedIpCount = requestCounts.size();
+        if (trackedIpCount == 0) {
+            return;
         }
+        log.debug("[RATE_LIMIT] 카운터 초기화, trackedIp Count ={}", requestCounts.size(),
+                kv("event", RATE_LIMIT_COUNTER_RESET_EVENT),
+                kv("trackedIpCount", trackedIpCount));
+
+        requestCounts.clear();
+    }
+
+    private String extractClientIp(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isBlank()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+
+        String xRealIp = request.getHeader("X-Real-IP");
+        if (xRealIp != null && !xRealIp.isBlank()) {
+            return xRealIp.trim();
+        }
+
+        return request.getRemoteAddr();
     }
 }
