@@ -26,12 +26,12 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private static final String RATE_LIMIT_EXCEEDED_EVENT = "rate_limit_exceeded";
     private static final String RATE_LIMIT_COUNTER_RESET_EVENT = "rate_limit_counter_reset";
 
-    private final int requestsPerMinute;
+    private final int limitPerMinute;
     private final ConcurrentHashMap<String, AtomicInteger> requestCounts;
 
 
-    public RateLimitFilter(@Value("${rate-limit.requests-per-minute}") int requestsPerMinute) {
-        this.requestsPerMinute = requestsPerMinute;
+    public RateLimitFilter(@Value("${rate-limit.requests-per-minute}") int limitPerMinute) {
+        this.limitPerMinute = limitPerMinute;
         this.requestCounts = new ConcurrentHashMap<>();
     }
 
@@ -47,13 +47,13 @@ public class RateLimitFilter extends OncePerRequestFilter {
         AtomicInteger count = requestCounts.computeIfAbsent(clientIp, k -> new AtomicInteger(0));
         int currentCount = count.incrementAndGet();
 
-        if (currentCount > requestsPerMinute) {
+        if (currentCount > limitPerMinute) {
             log.warn("[RATE_LIMIT] 요청 한도 초과: {}, {}, {}, {}, {}, {}",
                     kv("event", RATE_LIMIT_EXCEEDED_EVENT),
                     kv("clientIp", clientIp),
                     kv("method", method),
                     kv("uri", uri),
-                    kv("limitPerMinute", requestsPerMinute),
+                    kv("limitPerMinute", limitPerMinute),
                     kv("currentCount", currentCount),
                     kv("statusCode", HttpStatus.TOO_MANY_REQUESTS.value())
             );
@@ -73,9 +73,10 @@ public class RateLimitFilter extends OncePerRequestFilter {
         if (trackedIpCount == 0) {
             return;
         }
-        log.debug("[RATE_LIMIT] 카운터 초기화, trackedIp Count ={}", requestCounts.size(),
-                kv("event", RATE_LIMIT_COUNTER_RESET_EVENT),
-                kv("trackedIpCount", trackedIpCount));
+        log.debug("[RATE_LIMIT] 카운터 초기화, {}",
+                kv("trackedIpCount", trackedIpCount),
+                kv("event", RATE_LIMIT_COUNTER_RESET_EVENT)
+        );
 
         requestCounts.clear();
     }
