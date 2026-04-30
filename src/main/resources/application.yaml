@@ -2,7 +2,7 @@ spring:
   application:
     name: shorten-url-service
   profiles:
-    active: dev
+    active: local
   mvc:
     static-path-pattern: /ui/**
 
