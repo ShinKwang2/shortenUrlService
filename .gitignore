@@ -34,3 +34,10 @@ build/
 
 ### Claude ###
 .claude/settings.local.json
+
+### Logs ###
+*.log
+*.log.gz
+logs/
+!logs/
+!logs/.gitkeep

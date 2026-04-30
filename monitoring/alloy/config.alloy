@@ -1,0 +1,42 @@
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+loki.source.file "shorten_url_service" {
+  targets = [
+    {
+      __path__ = "/var/log/shorten-url-service/logs/*.log",
+      app      = "shorten-url-service",
+      env      = "local",
+      job      = "shorten-url-service",
+    },
+  ]
+
+  forward_to = [loki.process.shorten_url_service.receiver]
+
+  file_match {
+    enabled     = true
+    sync_period = "10s"
+  }
+}
+
+loki.process "shorten_url_service" {
+  stage.regex {
+    expression = "^(?P<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?) (?P<level>[A-Z]+)\\s+\\[(?P<thread>[^\\]]*)\\] \\[(?P<requestId>[^\\]]*)\\] (?P<logger>[^ ]+) - (?P<message>.*)$"
+  }
+
+  stage.labels {
+    values = {
+      level = "",
+    }
+  }
+
+  forward_to = [loki.write.local.receiver]
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
