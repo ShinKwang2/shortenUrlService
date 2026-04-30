@@ -1,11 +1,14 @@
 <configuration>
+    <!-- application.yml에서 값 주입 -->
     <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="application" />
     <springProperty scope="context" name="LOG_PATH" source="logging.file.path" defaultValue="logs" />
     <springProperty scope="context" name="LOGSTASH_HOST" source="logging.logstash.host" defaultValue="localhost:5044" />
 
+    <!-- 공통 Logging 패턴 -->
     <property name="LOG_PATTERN"
               value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{requestId:-}] %logger{36} - %msg%n" />
 
+    <!-- CONSOLE APPENDER -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
@@ -16,12 +19,16 @@
         <root level="DEBUG">
             <appender-ref ref="CONSOLE" />
         </root>
+        <!-- 외부 라이브러리는 너무 시끄러우니 INFO로 -->
         <logger name="org.springframework" level="INFO" />
         <logger name="org.hibernate" level="INFO" />
+        <!-- SQL 쿼리는 보고 싶으면 DEBUG -->
         <logger name="org.hibernate.SQL" level="DEBUG" />
     </springProfile>
 
+    <!-- dev, prod 일때만 LOGSTASH APPENDER 추가 -->
     <springProfile name="dev | prod">
+        <!-- 일반 파일 출력 (시간 + 크기 기반 롤링) -->
         <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_PATH}/${APP_NAME}.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -35,6 +42,7 @@
             </encoder>
         </appender>
 
+        <!-- Logstash 전송 -->
         <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
             <destination>${LOGSTASH_HOST}</destination>
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
@@ -51,9 +59,9 @@
         </appender>
     </springProfile>
 
+    <!-- 개발: 파일 + Logstash(Docker) -->
     <springProfile name="dev">
         <root level="DEBUG">
-            <appender-ref ref="CONSOLE" />
             <appender-ref ref="FILE" />
             <appender-ref ref="ASYNC_LOGSTASH" />
         </root>
@@ -61,11 +69,13 @@
         <logger name="org.hibernate" level="INFO" />
     </springProfile>
 
+    <!-- 운영: 파일 + Logstash, INFO (콘솔 제외) -->
     <springProfile name="prod">
         <root level="INFO">
             <appender-ref ref="FILE" />
             <appender-ref ref="ASYNC_LOGSTASH" />
         </root>
-        <logger name="org.hibernate.SQL" level="WARN" />
+        <!-- 운영에서는 SQL 로그 끄기 -->
+        <logger name="org.hibernate.SQL" level="WARN"/>
     </springProfile>
 </configuration>
