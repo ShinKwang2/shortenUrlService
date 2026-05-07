@@ -63,4 +63,9 @@ public class ShortenUrlRestController {
 
         return ResponseEntity.ok(shortenUrlInformationDtoList);
     }
+
+    @GetMapping("/test/error")
+    public ResponseEntity<Void> error() {
+        throw new RuntimeException("test error");
+    }
 }
