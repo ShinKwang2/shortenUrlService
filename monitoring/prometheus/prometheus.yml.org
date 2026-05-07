@@ -8,8 +8,21 @@ scrape_configs:
       - targets:
           - prometheus:9090
 
+  - job_name: loki
+    static_configs:
+      - targets:
+          - loki:3100
+
+  - job_name: alloy
+    static_configs:
+      - targets:
+          - alloy:12345
+
   - job_name: shorten-url-service
     metrics_path: /actuator/prometheus
     static_configs:
       - targets:
           - host.docker.internal:8080
+        labels:
+          application: shorten-url-service
+          env: local
